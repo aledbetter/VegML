@@ -1,0 +1,223 @@
+VegML Command line help
+ 
+  script=<filename>		
+  		script file to run commands from
+  	
+  new=<name>		
+  		Create a new model retain the name inside the model
+  
+  window=<size>(,<value-focus-offset>)	
+ 		size 1-12 larger window retains more data and is much larger
+  		<value-focus-offset> optionally the position of the data relative to the window-frame-offset to train to
+  			default is the window-frame-offset	
+  
+  description=<description>
+  		description of the model in words, length not limited but less is always more
+  										 
+  load=<filename(s)>
+  		model file to load, may be multiple with ','s or multiple params
+  		the first is the base model, all others will be merged into it, creating a larger model
+  			load=center.vml
+  			load=center.vml,left.vml,right.vml
+  			load=center.vml load=left.vml load=right.vml
+  
+  dimension=<tag>
+  		specify the dimension to use in the model
+   		multiple dimensions may be set, order matters, for use in testing. Only one dimension can be trained at a time
+  
+  dataplane=<tag>
+  		specify the dataplane to use in the model, make sure it has been added to the model
+  
+  add-dataplane=<name>(,<data-width>)
+		Add a dataplane is added if it does not exist in the dimension, dimension= must be set
+		dimension will be created if it does not exist.
+		<data-width> optionally sets the 'width' of the data value options if not a strict limit do not set
+			boolean data values -> 2
+			set of data value: red, blue, green -> 3
+			set is all possible integers -> do not set
+    		
+  save-vect-sets=
+  		Save all VectSets trained. default is true 
+  		This is required for some extended features to work, but takes extra memory
+  		
+  save-dimension-strings=
+   		Save all strings trained in the dimension. default is true 
+   		This is required for some extended features to work, but takes extra memory
+   		
+  show-progress=
+  		show training progress. default is true 
+
+  full-frames-always=
+   		Train full frames of data at edges. default is true 
+ 
+  save=<save-filename>		
+  		filename to save the model to, not saved if not listed
+  		
+  save-symbolic=<filename>	
+  		filename to save symbolic rules to, not saved if not listed
+  		the model must have been trained with vectSets and Dimension strings
+  		  save-vect-sets=true AND save-dimension-strings=true
+  		If you don't know use print to see if these are in the model
+  
+  train=<filename(s)>	
+  		training file to load, may be multiple with ','s or multiple params
+  
+  train-correctness=
+    	set exactly the same as training files, use all the same params as well
+    	this should be done for all trained data, after training is complete
+  
+  train-value=
+  		single value to train data to, common for classification of documents
+  		
+  train-dimension-index=
+    	index/column of feature data in the csv/tsv file, start with 0
+  
+  train-value-index=
+      	index/column of value data in the csv/tsv file, start with 0
+  
+  train-split-string=
+  		if train-data-mode=split set the string to split tokens with. default is '_'
+  		
+  train-segments=<number>
+  		Segmented training - TODO: incomplete in cmdline
+  
+  train-limit=<number/%>
+  		Used to limit the number of files trained to hard number or percentage
+  		This makes setting 70% of data for training very easy: train-limit=70%
+  		
+  train-data-mode= 
+  eval-data-mode=
+  		The type of training/eval file and value arrangement to use
+  		*default* 				- file: uses file extension .txt/.tsv/.csv
+  		self 					- file: train against dimension 1-to-1 -> use for patterns
+  		split 					- file: split tokens with value in train-split-string= 
+  								  token_value -> token for dimension, value to train to
+  		directory-text 			- each file to value train-value= -> use for classification
+   		directory-text-dirtags	- each file to directory name as value -> use for classification
+  		directory-text-split 	- same as split, for all files in directory
+  		directory-text-self 	- same as self, for all files in directory
+  
+  eval=<filename(s)>	
+  		Eval file to load, may be multiple with ','s or multiple params
+ 	
+  eval-text=
+  		Direct text to eval against
+  		
+  eval-value=
+  		Value to eval predicted value against
+  		 
+  eval-split-string=
+  		if eval-data-mode=split set the string to split tokens with. default is '_'
+
+  eval-dimension-index=
+  		index/column of feature data in the csv/tsv file, start with 0
+  		
+  eval-value-index=
+    	index/column of value data in the csv/tsv file, start with 0
+  
+  eval-eval-type=
+  		For non-testing results, when there is no test value
+  		segment - to eval data as a segment: block of text, classification, etc
+  		series  - to eval data as a series to iterate, token by token prediction/validation
+  
+  save-results=
+  		True to save the results for testing. results files will be one-to-one with test files
+ 
+  trace-text=
+  		TODO
+  		
+  mods=<mod>
+	  	smash		- entangle and optimize -> should always do this after training complete; decreases memory use
+		optimize	- optimize for performance and memory
+		entangle	- entangle accumulators based on probabilities
+		deentangle	- reverse entanglement
+		reduce-balanced		- remove balanced accumulators (with a probability of .5 for all values in the set)
+		reduce-redundant	- remove redundant accumulators, where a smaller subset produces the same result.
+							  this will change results slightly, is done before symbolic rules are generated
+		reduce-nonunique	- remove all accumulators that have more than 1 value, adds significan't bias to results
+	
+  function=<function>
+		clear-vect-sets 		- clear all the saved vectSets
+    	clear-dimension-strings - clear all the saved Dimension strings
+    
+  getstring=
+  		TODO
+  		
+  getnext=
+  		TODO Text /dimensional generation
+  		
+  getlast=
+  		TODO Text /dimensional generation  
+  
+  removeInfo=
+  		TODO
+  
+  close
+  		Script only: closes the current model, run line alone
+  
+  print
+  		Show the VegML model information
+  		
+  print-long
+  		Show more detailed VegML model information
+  		
+  print-strings
+  		Show the Dimension and DataPlane String sets
+  		
+  print-vectsets
+  		Show the vectSet break down
+  
+ General use:
+ 	1) CREATE a model and configure it
+ 		add dimension and dataplane to use. set dataplane dataWidth if known
+ 		
+ 	2) TRAIN data using one of the modes into the dimension and dataplane
+ 	
+ 	3) TRAIN-CORRECTNESS using the same data and methods
+ 		if this is skipped then only probability is used in decisions
+ 		correctness results are best if trained for correctness with full set, after complete. 
+ 		incremental works, but will produce biased results
+ 		
+ 	4) SAVE: smash it first to make it optimal
+ 	
+ 	5) EVAL: use model to get results, run tests, or generate content
+ 	
+ 	6) MODIFY: the model with reductions, additional dimensions / dataplans, or training to get desired results
+ 	
+ 
+ 			
+ Examples:
+ 
+	Create model train it and save it
+		veg new=tagged-random train=tagged.txt save=data.vml
+   	
+	Create larger model train it for dimension and dataplane, smash it to save space then save it
+		veg new=tagged-random window=5 train=tagged.txt dimension=text add-dataplane=others mod=smash save=data-5.vml
+   
+	Load model and test a data set, and save the results
+		veg load=data.vml dimension=text dataplane=others eval=random.txt save-results=true
+   
+	Print info
+		veg load=test.vml print-long
+    
+	Use a script (see vegtest.veg for example)
+		veg script=../vegtest.veg 
+    
+  
+	Add new dataplans and dimensions
+		veg load=test.vml print dimension=text add-dataplane=others save=test.vml
+		veg load=test.vml print dimension=moretext add-dataplane=values,4 save=test.vml
+	
+	Save symbolic rules (in our not-so-real-rule-format)
+		veg load=test.vml print save-symbolic=eval-sym.txt save-vect-sets=true save-dimension-strings=true
+	
+	Train  directory text
+		veg load=test.vml print dimension=text add-dataplane=others train=../corpus/reviews/neg train-value=negative train-data-mode=directory-text
+	Train directory text dirtag
+		veg load=test.vml print dimension=text add-dataplane=others train=../corpus/reviews/pos train-data-mode=directory-text-dirtags
+	
+    Train correctness for the data
+		veg load=test.vml print dimension=text add-dataplane=others train-correctness=../corpus/reviews/neg train-value=negative train-data-mode=directory-text
+		veg load=test.vml print dimension=text add-dataplane=others train-correctness=../corpus/reviews/pos train-data-mode=directory-text-dirtags
+
+   

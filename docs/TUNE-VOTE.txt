@@ -1,0 +1,59 @@
+Voted Reduction
+
+Voted Reduction is a form of logical tuning, it attempts to establish information
+dependencies and remove the weakest to produce better results and a smaller model.
+
+Each item in the tuning set is evaluated, the top N most probable correct accums
+or values are added to a upVote list per numberSet. The bottom N incorrect accums or
+values are added to a downVote list per numberSet.
+
+At the end of the cycle the accumes or values that are only in the downVote set
+are removed. Process repeat until no change, then the upVote max or downVote min
+are changed and the process is repeated.
+
+in another option, the process is identical by the downVotes are ignored and all
+accumes or values not in the upVotes are removed.
+
+The Result;
+Accuracy is improved against tuning set sometimes significantly, transfer to
+other sets is less extreme. With too much information removed results become far
+less accurate on other sets.
+The downVote method makes few changes, and produces better accuracy in models
+that have been tuned with the carve method.
+The upVote only method quickly reduces the size of models and can act as a stand
+alone tuning method, but does not produce results as good as the carve method.
+
+To improve results of both, accounting for all positive and negative dependencies
+needs to be tracked to ensure that information that is a significant dependency
+for the accuracy of many tokens is not removed.
+
+
+
+Voted2 Reduction
+
+Voted2 Reduction intends to work much like Voted, it will retain upVote and downVote lists
+They will not be limited and will contain all instances. 
+if not match, each non-matching item for all values that have a better score will
+be removed and re-evalued to get a definitive list of changed required to match.
+if match, each matching item will be removed and and re-evaluated to get a list
+of what is required for this match.
+if it is not possible to match then the token will be ignored
+if the count of positives is greater than negatives for a value/accum then it is not changed
+
+Evaluate will occure with and without weights
+
+
+  NEW:
+	for each token get results, if not pass AND have info to pass
+	- make list of elements to remove to pass, use best (highest probabilities) to decide
+		- add to complete list
+	- if pass - make list of top probabilities needed to pass
+	- at end
+		- get count of not-possible-to-pass
+		- remove the top-to-pass from the remove-to-pass
+			- remove those
+		- run again until we have the best result
+
+
+
+

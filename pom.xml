@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<name>VegML Library</name>
+	<groupId>xyz.sedro.full</groupId>
+	<version>1.0.000</version>
+	<artifactId>vegml</artifactId>
+	<packaging>jar</packaging>
+	<description>VegML implementation of Relational Probability Memory (RPM)</description>
+	<url>http://www.sedro.xyz</url>
+	<developers>
+		<developer>
+			<id>aledbetter</id>
+			<name>Aaron Ledbetter</name>
+			<email>aaron@sedro.xyz</email>
+		</developer>
+	</developers>
+	<issueManagement>
+		<url>https://github.com/aledbetter/VegML/issues</url>
+		<system>GitHub Issues</system>
+	</issueManagement>
+	<scm>
+		<url>https://github.com/aledbetter/VegML</url>
+		<connection>scm:git:git://github.com/aledbetter/VegML.git</connection>
+		<developerConnection>scm:git:git@github.com:aledbetter/VegML.git</developerConnection>
+	</scm>
+	<properties>
+		<maven.compiler.target>1.8</maven.compiler.target>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<java-version>1.8</java-version>
+		<buildNumber>B6660000228</buildNumber>
+	</properties>
+
+	<!-- dependencies -->
+	<dependencies>
+		<!-- Used for smaller faster hashtables -->
+		<!-- https://mvnrepository.com/artifact/gnu.trove/trove
+		LGPL
+		http://trove4j.sourceforge.net/html/license.html
+		 -->
+		<dependency>
+		    <groupId>gnu.trove</groupId>
+		    <artifactId>trove</artifactId>
+		    <version>3.0.3</version>
+		</dependency>
+		
+		<!-- needed for Default serialization (needs update to new versions) -->
+		<!-- https://mvnrepository.com/artifact/com.esotericsoftware/kryo 
+		BSD 3-Clause "New" or "Revised" License
+		https://github.com/EsotericSoftware/kryo/blob/master/LICENSE.md
+		-->
+		<dependency>
+		    <groupId>com.esotericsoftware</groupId>
+		    <artifactId>kryo</artifactId>
+		    <version>4.0.2</version>
+		</dependency>	
+		
+		<!-- needed for JSON serialization -->
+		<!-- https://mvnrepository.com/artifact/com.google.code.gson/gson 
+		Apache License 2.0
+		https://github.com/google/gson/blob/master/LICENSE
+		-->
+		<dependency>
+		    <groupId>com.google.code.gson</groupId>
+		    <artifactId>gson</artifactId>
+		    <version>2.8.5</version>
+		</dependency>
+	</dependencies>
+	
+	<!-- local distribution in github for snapshots -->
+	<distributionManagement>
+	   <repository>
+	     <id>github</id>
+	     <name>VegML release package</name>
+	     <url>https://maven.pkg.github.com/aledbetter/VegML</url>
+	   </repository>
+	   <snapshotRepository>
+	     <id>github</id>
+	     <name>VegML snapshot package</name>
+	     <url>https://maven.pkg.github.com/aledbetter/VegML</url>
+	   </snapshotRepository>
+	</distributionManagement>
+	
+	<!-- repository for trove -->
+	<repositories>
+		<repository>
+			<id>zoidberg-nexus</id>
+           <name>Zoidberg Nexus</name>
+           <url>http://zoidberg.ukp.informatik.tu-darmstadt.de/artifactory/public-releases/</url>
+           <releases>
+               <enabled>true</enabled>
+           </releases>
+		</repository>
+	</repositories>
+		
+	<build>
+		<plugins>
+	      <plugin>
+	        <groupId>org.apache.maven.plugins</groupId>
+	        <artifactId>maven-javadoc-plugin</artifactId>
+	        <version>3.3.1</version>
+	        <configuration>
+                <source>1.8</source>
+                <target>1.8</target>	        
+	        </configuration>
+	      </plugin>		
+		</plugins>
+	</build>
+
+</project>

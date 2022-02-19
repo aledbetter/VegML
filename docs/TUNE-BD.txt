@@ -1,0 +1,68 @@
+////////////////////////////////////////////////////////////////
+// TUNE Best Dependent - via test-taking
+
+// child vector mapping is efficiently added
+// test info and eval are in and in use
+
+// child dependency etc not in
+// full understanding of how this is to work is not yet available (not fully retained)
+
+// inital notes -> adaptive training part complete
+	Rec method
+	Get new ns.
+	Start with minimal - 1, then all at 2, 3, etc
+	Link all vectors in ns link to others in set with same tokens.
+	Link to child ns at create
+	Link all vector in child that match tokens.
+	
+	For all sets that don’t have links to matching vectors(correct vector) remove.
+	
+	If match, try extending to groups of tokens and drop those left orphaned.
+	Once all are comined, or correct move to next ns. At some point go back and final check against children
+	
+// other notes
+	this can be after training, or part of training to slowly build to a much
+	wider but less dense (in terms of numbersets) model
+	
+	First we evaluate the 'test' or training set to determine which quetions
+	are difficult and which are easy. In this process each NumberSet 'test tacker'
+	is evaluated to see how good they are in general.
+	
+	1. evaluate each numberset one by one against tuning set
+		- track for each item in tuning
+			- count of correct, count contains correct
+		- track for numberSet
+			- correct, contains correct
+			
+	
+	After all have completed (or the set selected for the iteration) each numberSet
+	is again evaluated to determine how many difficult questions they answer and how
+	many they have the best answer for.
+	
+	2. evaluate each numberset one by one against tuning set
+		for each token 'question' track
+			- count answers or correct answer any difficult questions
+			- count only one to correct or contain correct for question
+				- retain list of these
+			- also determine strength of answer (count)
+	
+	
+	Selection and reduction / mod
+	
+	
+	Here the overlapping numbersets should be put aside, ie those that don't offer unuque information
+	- run as set after remove or mod - check results; good / bad
+	- possible remove information that is not useful or wrong
+	- possible run dependency alg to improve the numbersets results
+	- possible keep just the unique positivce responses, toss the rest for a numberSet
+	
+	3. run results as a set
+		- remove weak numberSets
+		- run again, check results
+		- mode sets one by one
+			- check results set alone
+		- then run together and decide change no change
+		- try other algs, repeate
+		
+	
+	

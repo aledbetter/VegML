@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>RPM in browser Prototype</title>
+	<meta charset="utf-8">
+	<meta http-equiv="Content-Type" content="text/html">
+	<meta name="description" content="Sedro Lexicon View">	
+	<meta name="keywords" content="Sedro, Lexicon, NLP, NLU" >	
+	<script type="text/javascript" src="/js/dist/vegml.min.js"></script> 
+	<script type="text/javascript" src="/js/examples/postest.js"></script> 		
+</head>
+
+<body style='background:#E5E5E5'>		
+	<div id='lheader'>
+		<h1>Relational Probability Memory (RPM)</h1>
+		<h2 style='margin-top:-15px'>In Browser AI</h2>
+	</div>
+	
+	<p>
+		This prototype uses an RMP Model to generate NLP Part of speech tags in browser, with accuracy is 95.8%-96.4% on WSJ corpus.<br> 
+		The model is evaluated in pure JavaScript.
+	</p>
+	
+	<div style='margin-top:30px'>	
+		<div style='min-height:680px'>								
+			<h3 style='margin-top:10px;margin-bottom:5px'>Enter Text to Tag</h3>
+			<div class='fLn' style='margin-bottom:20px;padding:10px;background:#666;color:#FFF;min-height:50px;font-size:18px;padding-top:12px'>		
+				<textarea style='width:99%;min-height:200px;resize:none' id='data'></textarea>
+				<br>		
+				<button id="process">Process</button>		
+			</div>				
+			
+			<h3 style='margin-top:10px;margin-bottom:5px'>Results</h3>
+			<div style='padding:10px;line-height:1.8em;background:#FFF'>
+				<div id='results'>...</div>
+			</div>
+		</div>
+	</div>
+	
+</body>
+</html>

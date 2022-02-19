@@ -1,0 +1,24 @@
+////////////////////////////////////////////////////////////////
+// Dataset types and Eval types
+
+// Classification & logic
+	- segment - set of data tuned to a single value
+		sizes vary, value can be boolean, tag, etc
+		common: sentiment, image classification, extended for Q&A
+		
+	- stream - stream of data where running eval determines at any point that there is a match
+		multiple classifications can be evaluted, steam continues after 'segement' classification within it
+		probability of any tag can be 'asked' at any time
+	
+	- block - set of framed data where all relationships are within the frame AND each block is 1 frame AND there is not focus
+		common: AND/OR/XOR, logic, math
+	
+	- sequence - set of framed data where all relationships are within the frame, and there is a value for the focus
+		- the relationships in the model determine if a sequence or a block of values
+		common POS, text classification
+		
+
+
+// methods
+	- segments and streams can be evalued down to a block that can be re-evaled
+	- streams can be evaluted with segment method, sequence or both
