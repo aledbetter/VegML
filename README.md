@@ -10,7 +10,7 @@ RMPs are a form of Non-Neural Machine Learning that are capable of producing inf
 
 ---
 
-![RPM](docs/rpm-basic-sm.jpg "Relational Probability Memory")
+![RPM](docs/rpm-flow-sm.jpg "Relational Probability Memory")
 
 ---
 
