@@ -47,7 +47,6 @@ import vegml.Data.VFileUtil;
 import vegml.Data.VDataSetDescriptor.DSDataType;
 import vegml.Data.VDataSetDescriptor.DSInputSetType;
 import vegml.Data.VDataSets.DSFmt;
-import vegml.Data.VFileUtil.DataSetType;
 import vegml.VResultSet;
 
 
@@ -65,31 +64,39 @@ import vegml.VResultSet;
  * 
  */
 public class TestPosViaTextFmt {
-	static private DataSetType dataSetToUse = DataSetType.WSJTreebank3;			// load WSJ Full
-
-	// expects a neg and pos directory under it
-	// THERE MUST BE NO OTHER FILES IN THIS DIRECTORY 
-	// - when you download the content there are a few indexes/etc.. delete them or results will be significantly flawed
-	static final String wsj_full_file_base_directory = "../corpus/treebank_3/treebank_3/tagged/pos/wsj";
-	static final String corpus_base_directory = "../corpus";	
-
+	static String directory = "../models";
 
 	////////////////////////////////////////////////////
 	// Train or optimize a model for events
 	//
 	public static void main(String [] args) {
-		int window = 5;		
-		int valueFocus = 2;	
+		double percentTune = 25, percentTest = 25;
+		int window = 5, valueFocus = 2;	
 		// 2/1 TEST    => RESULT[94.44%] miss[9520 of 171138]  Time[0:00.659]
 		// 3/1 TEST    => RESULT[95.58%] miss[7563 of 171138]  Time[0:03.474]
 		// 4/2 TEST    => RESULT[95.82%] miss[7152 of 171138]  Time[0:09.705]
-
-		double percentTune = 0;
+		String corpusDir = "../corpus";
+		String dataset = "WSJ"; // brown/brown-penntreebank
 		
-		// load dataSet
-		VDataSets dss = VFileUtil.loadDataSetsDS(dataSetToUse, wsj_full_file_base_directory, percentTune, 0);
-				
-		System.out.println("DATASET["+dataSetToUse+"] LOADED train["+dss.getTrainCount()+"] tune["+dss.getTuneCount()+"] test[" + dss.getTestCount()+"] dataWidth["+ dss.getDefinition().getTagCount()+"]");	
+		VegML.showCopywrite();
+		
+		/////////////////////////////////////////////////////////////////////
+		// parse the arguments if from command line
+		if (args != null && args.length > 0) {    		
+			for (String a:args) {
+				String [] ap = a.split("=");	
+				if (a.startsWith("directory=")) {
+					directory = ap[1];
+				} else if (a.startsWith("dataset=")) {
+					// this is messy: WSJ:../corpus
+					String sq [] = ap[1].split(":");
+					if (sq.length == 2) corpusDir = sq[1];
+					dataset = sq[0];
+				}
+			}
+		} 		
+		VDataSets dss = VFileUtil.loadDataSet(dataset, corpusDir, percentTune, percentTest);
+		System.out.println("DATASET["+dataset+"] LOADED train["+dss.getTrainCount()+"] tune["+dss.getTuneCount()+"] test[" + dss.getTestCount()+"] dataWidth["+ dss.getDefinition().getTagCount()+"]");	
 		VDataSets trainDs = dss.getTrainDataSets();
 		VDataSets tuneDs = dss.getTuneDataSets();
 		VDataSets testDs = dss.getTestDataSets();

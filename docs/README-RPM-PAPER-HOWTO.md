@@ -28,33 +28,33 @@ Build VegML and the examples and install needed dependencies
 To generate the models the last argument for each is the corpus and location as well as the output directory for
 the generated models;there will be a lot of them so make ensure you have 70gb free on your drive.
 
-	-corpus WSJ:../../corpus
-	-dir ../../models
+	dataset=WSJ:../../corpus
+	directory=../../models
 
 Run the commands, they make take some time and a bit of memory	
 	
-	java -Xms2g -Xmx128g -Dfile.encoding=UTF-8 -classpath ./target/classes:./target/dependency/trove-3.0.3.jar:./target/dependency/kryo-4.0.2.jar:./target/dependency/reflectasm-1.11.3.jar:./target/dependency/asm-5.0.4.jar:./target/dependency/minlog-1.3.0.jar:./target/dependency/objenesis-2.5.1.jar:./target/dependency/gson-2.8.5.jar:./target/vegml-1.0.000.jar org.sedro.examples.GenPosViaAffix -corpus WSJ:../corpus -dir ../models
+	java -Xms2g -Xmx128g -Dfile.encoding=UTF-8 -classpath ./target/classes:./target/dependency/trove-3.0.3.jar:./target/dependency/kryo-4.0.2.jar:./target/dependency/reflectasm-1.11.3.jar:./target/dependency/asm-5.0.4.jar:./target/dependency/minlog-1.3.0.jar:./target/dependency/objenesis-2.5.1.jar:./target/dependency/gson-2.8.5.jar:./target/vegml-1.0.000.jar org.sedro.examples.GenPosViaAffix dataset=WSJ:../corpus directory=../models
 	
-	java -Xms2g -Xmx128g -Dfile.encoding=UTF-8 -classpath ./target/classes:./target/dependency/trove-3.0.3.jar:./target/dependency/kryo-4.0.2.jar:./target/dependency/reflectasm-1.11.3.jar:./target/dependency/asm-5.0.4.jar:./target/dependency/minlog-1.3.0.jar:./target/dependency/objenesis-2.5.1.jar:./target/dependency/gson-2.8.5.jar:./target/vegml-1.0.000.jar org.sedro.examples.GenPosViaText -corpus WSJ:../corpus -dir ../models
+	java -Xms2g -Xmx128g -Dfile.encoding=UTF-8 -classpath ./target/classes:./target/dependency/trove-3.0.3.jar:./target/dependency/kryo-4.0.2.jar:./target/dependency/reflectasm-1.11.3.jar:./target/dependency/asm-5.0.4.jar:./target/dependency/minlog-1.3.0.jar:./target/dependency/objenesis-2.5.1.jar:./target/dependency/gson-2.8.5.jar:./target/vegml-1.0.000.jar org.sedro.examples.GenPosViaText dataset=WSJ:../corpus directory=../models
 	
-	java -Xms2g -Xmx128g -Dfile.encoding=UTF-8 -classpath ./target/classes:./target/dependency/trove-3.0.3.jar:./target/dependency/kryo-4.0.2.jar:./target/dependency/reflectasm-1.11.3.jar:./target/dependency/asm-5.0.4.jar:./target/dependency/minlog-1.3.0.jar:./target/dependency/objenesis-2.5.1.jar:./target/dependency/gson-2.8.5.jar:./target/vegml-1.0.000.jar org.sedro.examples.GenPosViaMix -corpus WSJ:../corpus -dir ../models
+	java -Xms2g -Xmx128g -Dfile.encoding=UTF-8 -classpath ./target/classes:./target/dependency/trove-3.0.3.jar:./target/dependency/kryo-4.0.2.jar:./target/dependency/reflectasm-1.11.3.jar:./target/dependency/asm-5.0.4.jar:./target/dependency/minlog-1.3.0.jar:./target/dependency/objenesis-2.5.1.jar:./target/dependency/gson-2.8.5.jar:./target/vegml-1.0.000.jar org.sedro.examples.GenPosViaMix dataset=WSJ:../corpus directory=../models
 
 	
 To generate the mixed models once base models are created
 	
-	java -Xms2g -Xmx128g -Dfile.encoding=UTF-8 -classpath ./target/classes:./target/dependency/trove-3.0.3.jar:./target/dependency/kryo-4.0.2.jar:./target/dependency/reflectasm-1.11.3.jar:./target/dependency/asm-5.0.4.jar:./target/dependency/minlog-1.3.0.jar:./target/dependency/objenesis-2.5.1.jar:./target/dependency/gson-2.8.5.jar:./target/vegml-1.0.000.jar org.sedro.examples.GenPosViaMerge -corpus WSJ:../corpus -dir ../models
+	java -Xms2g -Xmx128g -Dfile.encoding=UTF-8 -classpath ./target/classes:./target/dependency/trove-3.0.3.jar:./target/dependency/kryo-4.0.2.jar:./target/dependency/reflectasm-1.11.3.jar:./target/dependency/asm-5.0.4.jar:./target/dependency/minlog-1.3.0.jar:./target/dependency/objenesis-2.5.1.jar:./target/dependency/gson-2.8.5.jar:./target/vegml-1.0.000.jar org.sedro.examples.GenPosViaMerge dataset=WSJ:../corpus directory=../models
 
 
 To generate learning curve models and export data as .csv 
 
-	java -Xms2g -Xmx128g -Dfile.encoding=UTF-8 -classpath ./target/classes:./target/dependency/trove-3.0.3.jar:./target/dependency/kryo-4.0.2.jar:./target/dependency/reflectasm-1.11.3.jar:./target/dependency/asm-5.0.4.jar:./target/dependency/minlog-1.3.0.jar:./target/dependency/objenesis-2.5.1.jar:./target/dependency/gson-2.8.5.jar:./target/vegml-1.0.000.jar org.sedro.examples.MapLearningCurve -corpus WSJ:../corpus -dir ../models
+	java -Xms2g -Xmx128g -Dfile.encoding=UTF-8 -classpath ./target/classes:./target/dependency/trove-3.0.3.jar:./target/dependency/kryo-4.0.2.jar:./target/dependency/reflectasm-1.11.3.jar:./target/dependency/asm-5.0.4.jar:./target/dependency/minlog-1.3.0.jar:./target/dependency/objenesis-2.5.1.jar:./target/dependency/gson-2.8.5.jar:./target/vegml-1.0.000.jar org.sedro.examples.MapLearningCurve dataset=WSJ:../corpus directory=../models
 
 
 ## Evaluating Models
 	
 To test each model in ../models and show the results with tuning and test data sets
 
-	java -Xms2g -Xmx128g -Dfile.encoding=UTF-8 -classpath ./target/classes:./target/dependency/trove-3.0.3.jar:./target/dependency/kryo-4.0.2.jar:./target/dependency/reflectasm-1.11.3.jar:./target/dependency/asm-5.0.4.jar:./target/dependency/minlog-1.3.0.jar:./target/dependency/objenesis-2.5.1.jar:./target/dependency/gson-2.8.5.jar:./target/vegml-1.0.000.jar org.sedro.examples.VegTestModels -corpus WSJ:../corpus -dir ../models
+	java -Xms2g -Xmx128g -Dfile.encoding=UTF-8 -classpath ./target/classes:./target/dependency/trove-3.0.3.jar:./target/dependency/kryo-4.0.2.jar:./target/dependency/reflectasm-1.11.3.jar:./target/dependency/asm-5.0.4.jar:./target/dependency/minlog-1.3.0.jar:./target/dependency/objenesis-2.5.1.jar:./target/dependency/gson-2.8.5.jar:./target/vegml-1.0.000.jar org.sedro.examples.VegTestModels -corpus WSJ:../dataset directory=../models
 
 	
 

@@ -52,8 +52,6 @@ import vegml.VegUtil;
 import vegml.Data.VDataSets;
 import vegml.Data.VFileUtil;
 import vegml.Data.VDataSetDescriptor.DSDataType;
-import vegml.Data.VFileUtil.DataSetType;
-
 
 
 /**
@@ -68,82 +66,56 @@ import vegml.Data.VFileUtil.DataSetType;
  * This is not very affective for languages that do not have prefixes/suffixes or formats that imply semantics
  */
 public class GenPosViaAffix {
-	//static private DataSetType dataSetToUse = DataSetType.BrownPennTreebankTags; 	// moved 'almost' to penn treebank (49)
-	//static private DataSetType dataSetToUse = DataSetType.BrownUniversalTags; 	// universal tagset
-	//static private DataSetType dataSetToUse = DataSetType.BrownCleanTags; 		// just primary tags per token (91)
-	//static private DataSetType dataSetToUse = DataSetType.BrownOldTags; 			// base form (4xx)
-	static private DataSetType dataSetToUse = DataSetType.WSJTreebank3;				// load WSJ Full
-	//static private DataSetType dataSetToUse = DataSetType.WSJTreebank;			// load WSJ if you got it (I don't $$$)
-	//static private DataSetType dataSetToUse = DataSetType.UDPipeConLL;			// load CONLL17 UDPipe.conllu
-
-	// expects a neg and pos directory under it
-	// THERE MUST BE NO OTHER FILES IN THIS DIRECTORY 
-	// - when you download the content there are a few indexes/etc.. delete them or results will be significantly flawed
-	static final String file_base_directory = "../corpus/brownPos";
-	static final String wsj_file_base_directory = "../corpus/treebank/tagged";
-	static final String wsj_full_file_base_directory = "../corpus/treebank_3/treebank_3/tagged/pos/wsj";
-	static final String corpus_base_directory = "../corpus";	
- 
 	static int OPTIMIZE = 1;		
 	static VDataSets ds = null;		
+	static String directory = "../models";
 
 	////////////////////////////////////////////////////
-	// brown text -> POS 
+	// dataset text -> POS 
 	// Train a dataplan to provide POS for input text
 	public static void main(String [] args) {
-		int prefix = 4;
-		int suffix = 10;
+		int prefix = 4, suffix = 10;
+		double percentTune = 15, percentTest = 15;
+		String corpusDir = "../corpus";
+		String dataset = "WSJ"; // brown/brown-penntreebank
+		
 		VegML.showCopywrite();
-		loadData(25);
-	
+
+		/////////////////////////////////////////////////////////////////////
+		// parse the arguments if from command line
+		if (args != null && args.length > 0) {    		
+			for (String a:args) {
+				String [] ap = a.split("=");	
+				if (a.startsWith("directory=")) {
+					directory = ap[1];
+				} else if (a.startsWith("dataset=")) {
+					// this is messy: WSJ:../corpus
+					String sq [] = ap[1].split(":");
+					if (sq.length == 2) corpusDir = sq[1];
+					dataset = sq[0];
+				}
+			}
+		} 		
+		ds = VFileUtil.loadDataSet(dataset, corpusDir, percentTune, percentTest);
+		System.out.println("DATASET["+dataset+"] LOADED train["+ds.getTrainCount()+"] tune["+ds.getTuneCount()+"] test[" + ds.getTestCount()+"] dataWidth["+ ds.getDefinition().getTagCount()+"]");	
+			
 		////////////////////////////////
 		// baseline
 		OPTIMIZE = 0;
-		testAffixPOS(15, prefix, suffix);
+		testAffixPOS(prefix, suffix);
 		
 		////////////////////////////////
 		// carve unknown
 		OPTIMIZE = 1;
-		testAffixPOS(15, prefix, suffix);
+		testAffixPOS(prefix, suffix);
 	}
 
 	
-	/**
-	 * load the data set
-	 */
-	static void loadData(double percentTest) {
-		double percentTune = 0;
-
-		// load dataSet
-		if (dataSetToUse == DataSetType.UDPipeConLL) {
-			String type = "gold"; // gold/test
-			String languageTag = "zh";
-			String setDir = "UD_Chinese";
-			//String setDir = "UD_English";
-			//String setDir = "UD_English-LinES";
-			//String setDir = "UD_English-ParTUT";
-			//String setDir = "UD_Vietnamese";
-			//String setDir = null; // "UD_English-LinES"
-			//String languageTag = null;
-			//String ps = "UPOS"; // "XPOS";
-			String ps = "XPOS"; // "XPOS";
-			ds = VFileUtil.loadDataSetsDSConLL(type, corpus_base_directory, languageTag, setDir, ps);
-		} else {
-			String filename = file_base_directory;
-			if (dataSetToUse == DataSetType.WSJTreebank) filename = wsj_file_base_directory;
-			else if (dataSetToUse == DataSetType.WSJTreebank3) filename = wsj_full_file_base_directory;
-			ds = VFileUtil.loadDataSetsDS(dataSetToUse, filename, percentTune, percentTest);
-		}
-		
-		ds.genVSets();
-		System.out.println("DATASET["+dataSetToUse+"] LOADED train["+ds.getTrainCount()+"] tune["+ds.getTuneCount()+"] test[" + ds.getTestCount()+"] dataWidth["+ ds.getDefinition().getTagCount()+"]");	
-	}
-
-	static int testAffixPOS(double percentTest, int prefix, int suffix) {
+	static int testAffixPOS(int prefix, int suffix) {
 		
 		if (OPTIMIZE > 0) {
 			PredictionType pType = PredictionType.AnyUnknown;
-			String iName = "../models/vafx-14.veg";
+			String iName = directory+"/vafx-14.veg";
 			// affix -> larger range
 			int dropSet = 0;
 			int phases = 2;
@@ -154,11 +126,11 @@ public class GenPosViaAffix {
 			double downWeight = 0.8;
 			
 			if (OPTIMIZE == 1) {
-				return VegTune.carveSteps("affix", "pos", iName, "../models/vafx", suffix+prefix, NSWeightBase.None, 
+				return VegTune.carveSteps("affix", "pos", iName, directory+"/vafx", suffix+prefix, NSWeightBase.None, 
 													pType, 0, dropSet, phases, 6, identityFilter, noBackingUp, 
 													useReduction, downWeight, setFullData, ds);
 			} else {
-				String initName = "../models/vafx-14-w4-s4.veg";	
+				String initName = directory+"/vafx-14-w4-s4.veg";	
 				boolean fullData = true;
 				useReduction = false;
 				return VegTune.logicalViaDependencyMapping(initName, "affix", "pos", NSWeightBase.None, 
@@ -192,6 +164,7 @@ public class GenPosViaAffix {
 		vML.setCfgInputDataType("affix", "pos", DSDataType.Char);
 
 		// SET the FRAMER	
+		// there is a generic framer that can do this in VegML...
 		vML.setCfgScratch("affix", "pos", "prefix", prefix);
 		vML.setCfgScratch("affix", "pos", "suffix", (suffix-2));
 		vML.setCfgFramer("affix", "pos", "character", new VegFramer() {
@@ -256,8 +229,12 @@ public class GenPosViaAffix {
 			}
 		});		
 
-						
+		///////////////////////////////////
 		// setup special numberSets
+		//
+		// NOTE: this is based on Edge but with some modifications for the added features
+		// NOTE: Adaptive training can be used to determine what numberSets to use AND to tune
+		//
 		vML.clearCfgNS("affix", "pos");
 		// make back sequences on by one
 		int end = suffix-2;  // '-'
@@ -326,8 +303,7 @@ public class GenPosViaAffix {
 		vML.setStateReady("affix", "pos");
 		
 		vML.print();
-		vML.save("../models/vafx-"+(prefix+suffix)+".veg");
+		vML.save(directory+"/vafx-"+(prefix+suffix)+".veg");
 		return -1;
 	}
-	
 }

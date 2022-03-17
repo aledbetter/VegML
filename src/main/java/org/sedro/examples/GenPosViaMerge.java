@@ -38,7 +38,6 @@ import vegml.VegML.PredictionType;
 import vegml.VegTune;
 import vegml.Data.VDataSets;
 import vegml.Data.VFileUtil;
-import vegml.Data.VFileUtil.DataSetType;
 import vegml.VegCallOut;
 import vegml.VegCallOut.VegCOMCondition;
 import vegml.VegCallOut.VegCallOutMods;
@@ -53,33 +52,39 @@ import vegml.VegCallOut.VegCallOutMods;
  * 
  * user VegTestModels to view results, or load the models directly and use them
  */
-public class GenPosViaMerge {
-	//static private DataSetType dataSetToUse = DataSetType.BrownPennTreebankTags; 	// moved 'almost' to penn treebank (49)
-	//static private DataSetType dataSetToUse = DataSetType.BrownUniversalTags; 	// universal tagset
-	//static private DataSetType dataSetToUse = DataSetType.BrownCleanTags; 		// just primary tags per token (91)
-	//static private DataSetType dataSetToUse = DataSetType.BrownOldTags; 			// base form (4xx)
-	static private DataSetType dataSetToUse = DataSetType.WSJTreebank3;				// load WSJ Full
-	//static private DataSetType dataSetToUse = DataSetType.WSJTreebank;			// load WSJ if you got it (I don't $$$)
-	//static private DataSetType dataSetToUse = DataSetType.UDPipeConLL;			// load CONLL17 UDPipe.conllu
-
-	// expects a neg and pos directory under it
-	// THERE MUST BE NO OTHER FILES IN THIS DIRECTORY 
-	// - when you download the content there are a few indexes/etc.. delete them or results will be significantly flawed
-	static final String file_base_directory = "../corpus/brownPos";
-	static final String wsj_file_base_directory = "../corpus/treebank/tagged";
-	static final String wsj_full_file_base_directory = "../corpus/treebank_3/treebank_3/tagged/pos/wsj";
-	static final String corpus_base_directory = "../corpus";	
- 
+public class GenPosViaMerge { 
 	static VDataSets ds = null;		
+	static String directory = "../models";
 
 	////////////////////////////////////////////////////
 	// brown text -> POS 
 	// Train a dataplan to provide POS for input text
 	public static void main(String [] args) {
-		int prefix = 4;
-		int suffix = 10;
+		int prefix = 4, suffix = 10;
+		double percentTune = 25, percentTest = 25;
+		String corpusDir = "../corpus";
+		String dataset = "WSJ"; // brown/brown-penntreebank
+		
 		VegML.showCopywrite();
-		loadData(25);
+		
+		/////////////////////////////////////////////////////////////////////
+		// parse the arguments if from command line
+		if (args != null && args.length > 0) {    		
+			for (String a:args) {
+				String [] ap = a.split("=");	
+				if (a.startsWith("directory=")) {
+					directory = ap[1];
+				} else if (a.startsWith("dataset=")) {
+					// this is messy: WSJ:../corpus
+					String sq [] = ap[1].split(":");
+					if (sq.length == 2) corpusDir = sq[1];
+					dataset = sq[0];
+				}
+			}
+		} 		
+		ds = VFileUtil.loadDataSet(dataset, corpusDir, percentTune, percentTest);
+		System.out.println("DATASET["+dataset+"] LOADED train["+ds.getTrainCount()+"] tune["+ds.getTuneCount()+"] test[" + ds.getTestCount()+"] dataWidth["+ ds.getDefinition().getTagCount()+"]");	
+
 		
 		////////////////////////////////
 		// mixed models		
@@ -105,8 +110,8 @@ public class GenPosViaMerge {
 
 		////////////////////////////////
 		// mix with text 
-		VegML vML = VegML.load("../models/vafx-"+(prefix+suffix)+"-w4-s"+afxNum+".veg");  // affix
-		VegML vMLt = VegML.load("../models/crv-text-5-w1-sp"+textNum+".veg"); // text
+		VegML vML = VegML.load(directory+"/vafx-"+(prefix+suffix)+"-w4-s"+afxNum+".veg");  // affix
+		VegML vMLt = VegML.load(directory+"/crv-text-5-w1-sp"+textNum+".veg"); // text
 		vML.merge(vMLt); // merge into one
 		vML.setCfgDefaultDataPlane("text", "pos");
 		// make integration callout for text
@@ -116,14 +121,14 @@ public class GenPosViaMerge {
 		vML.setCfgCalloutDefault("text", "pos", vcom, null);	
 		vML.setCfgCalloutToDefault("text", "pos");
 		// save it
-		vML.save("../models/vmerged-text-unaffix-5.veg");
+		vML.save(directory+"/vmerged-text-unaffix-5.veg");
 				
 
 		////////////////////////////////
 		// mix with text 
 		// with logic(lowercase) in model's resolve
-		vML = VegML.load("../models/vafx-"+(prefix+suffix)+"-w4-s"+afxNum+".veg");  // affix
-		vMLt = VegML.load("../models/crv-text-5-w1-sp"+textNum+".veg"); // text
+		vML = VegML.load(directory+"/vafx-"+(prefix+suffix)+"-w4-s"+afxNum+".veg");  // affix
+		vMLt = VegML.load(directory+"/crv-text-5-w1-sp"+textNum+".veg"); // text
 		vML.merge(vMLt); // merge into one
 		vML.setCfgDefaultDataPlane("text", "pos");
 		// make integration callout for text
@@ -136,24 +141,24 @@ public class GenPosViaMerge {
 		vML.setCfgCalloutDefault("text", "pos", vcom, null);	
 		vML.setCfgCalloutToDefault("text", "pos");
 		// save it
-		vML.save("../models/vmerged-text-unaffix-logic-5.veg");
+		vML.save(directory+"/vmerged-text-unaffix-logic-5.veg");
 		
 		
 		////////////////////////////////
 		// mix with text, mix, text_un, mix_un
-		vML = VegML.load("../models/vafx-14-w4-s"+afxMergeNum+".veg"); // affix merging
-		vMLt = VegML.load("../models/crv-text-5-w1-sp"+textMergeNum+".veg");	// text
+		vML = VegML.load(directory+"/vafx-14-w4-s"+afxMergeNum+".veg"); // affix merging
+		vMLt = VegML.load(directory+"/crv-text-5-w1-sp"+textMergeNum+".veg");	// text
 		vML.merge(vMLt); // merge into one
 		
-		VegML vMLtun = VegML.load("../models/crv_un-text-5-w1-sp"+textUnNum+".veg");	// text_un
+		VegML vMLtun = VegML.load(directory+"/crv_un-text-5-w1-sp"+textUnNum+".veg");	// text_un
 		vMLtun.moveDataPlane("text", "pos", "text_un", "pos");
 		vML.merge(vMLtun); // merge into one
 		
-		VegML vMLmun = VegML.load("../models/vmixun-5-w1-sp"+mixNum+".veg");	// mix_un
+		VegML vMLmun = VegML.load(directory+"/vmixun-5-w1-sp"+mixNum+".veg");	// mix_un
 		vMLmun.moveDataPlane("mix", "pos", "mix_un", "pos");
 		vML.merge(vMLmun); // merge into one
 		
-		VegML vMLm = VegML.load("../models/vmix-5-w1-sp"+mixUnNum+".veg");		// mix
+		VegML vMLm = VegML.load(directory+"/vmix-5-w1-sp"+mixUnNum+".veg");		// mix
 		vML.merge(vMLm); // merge into one
 		vML.setCfgDefaultDataPlane("text", "pos");
 
@@ -183,39 +188,6 @@ public class GenPosViaMerge {
 		VegTune.optimizeMergeModels(vML, "text", "pos", "mix", "pos", false, false, null, false, true, false, ds.getTuneDataSets());
 
 		// save it
-		vML.save("../models/vmerged-text-mixed-5.veg");		
+		vML.save(directory+"/vmerged-text-mixed-5.veg");		
 	}
-	
-	/**
-	 * load the data set
-	 */
-	static void loadData(double percentTest) {
-		double percentTune = 0;
-
-		// load dataSet
-		if (dataSetToUse == DataSetType.UDPipeConLL) {
-			String type = "gold"; // gold/test
-			String languageTag = "zh";
-			String setDir = "UD_Chinese";
-			//String setDir = "UD_English";
-			//String setDir = "UD_English-LinES";
-			//String setDir = "UD_English-ParTUT";
-			//String setDir = "UD_Vietnamese";
-			//String setDir = null; // "UD_English-LinES"
-			//String languageTag = null;
-			//String ps = "UPOS"; // "XPOS";
-			String ps = "XPOS"; // "XPOS";
-			ds = VFileUtil.loadDataSetsDSConLL(type, corpus_base_directory, languageTag, setDir, ps);
-		} else {
-			String filename = file_base_directory;
-			if (dataSetToUse == DataSetType.WSJTreebank) filename = wsj_file_base_directory;
-			else if (dataSetToUse == DataSetType.WSJTreebank3) filename = wsj_full_file_base_directory;
-			ds = VFileUtil.loadDataSetsDS(dataSetToUse, filename, percentTune, percentTest);
-		}
-		
-		ds.genVSets();
-		System.out.println("DATASET["+dataSetToUse+"] LOADED train["+ds.getTrainCount()+"] tune["+ds.getTuneCount()+"] test[" + ds.getTestCount()+"] dataWidth["+ ds.getDefinition().getTagCount()+"]");	
-	}
-
-
 }

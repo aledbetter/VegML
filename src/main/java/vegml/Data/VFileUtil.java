@@ -131,7 +131,53 @@ public class VFileUtil {
 			 {"UD_Russian-SynTagRus", "ru"},
 			 {"UD_Vietnamese", "vi"}
 		};
+	
+	/**
+	 * load the data set
+	 */
+	static final String file_base_directory = "/brown";
+	static final String wsj_full_file_base_directory = "/treebank_3/treebank_3/tagged/pos/wsj";
+	
+	public static VDataSets loadDataSet(String dataSet, String corpusDirectory, double percentTune, double percentTest) {
+		DataSetType dataSetToUse = DataSetType.BrownOldTags;
+		if (dataSet.equalsIgnoreCase("WSJ")) dataSetToUse = DataSetType.WSJTreebank3;
+		else if (dataSet.equalsIgnoreCase("brown-penntreebank")) dataSetToUse = DataSetType.BrownPennTreebankTags;
+		else if (dataSet.toLowerCase().startsWith("conll17")) dataSetToUse = DataSetType.UDPipeConLL;
 
+		String bdir = "../corpus";
+		if (corpusDirectory != null) bdir = corpusDirectory;
+		VDataSets dss = null;
+		
+		// load dataSet
+		if (dataSetToUse == DataSetType.UDPipeConLL) {
+			// should load test and gold, split for tune/test
+			// FIXME
+			//dataSet = conll17/zh/UD_Chinese
+			String dx [] = dataSet.split("/");
+			String languageTag = dx[1];
+			String setDir = dx[2];
+			String ps = "XPOS"; // "XPOS";
+			String type = "test"; // gold/test
+			if (dataSet.toLowerCase().startsWith("conll17-gold")) type = "gold";
+			else if (dataSet.toLowerCase().startsWith("conll17-test")) type = "test";
+
+			//String languageTag = "zh";
+			//setDir = "UD_Chinese";
+			//String setDir = "UD_English";
+			//String setDir = "UD_English-LinES";
+			//String setDir = "UD_English-ParTUT";
+			//String setDir = "UD_Vietnamese";
+			//String setDir = null; // "UD_English-LinES"
+			dss = VFileUtil.loadDataSetsDSConLL(type, bdir, languageTag, setDir, ps);
+		} else {
+			String filename = bdir+file_base_directory;
+			if (dataSetToUse == DataSetType.WSJTreebank3) filename = bdir+wsj_full_file_base_directory;
+			dss = VFileUtil.loadDataSetsDS(dataSetToUse, filename, percentTune, percentTest);
+		}		
+		dss.genVSets();
+		return dss;
+	}
+	
 	/**
 	 * delete a file or directory (if empty)
 	 * @param fn
@@ -1447,7 +1493,7 @@ public class VFileUtil {
 	}
 
     // data fyle types
-	public static enum DataSetType {BrownOldTags, BrownCleanTags, BrownPennTreebankTags, BrownUniversalTags, WSJTreebank, WSJTreebank3,
+	static enum DataSetType {BrownOldTags, BrownCleanTags, BrownPennTreebankTags, BrownUniversalTags, WSJTreebank, WSJTreebank3,
 					GenericTokens, FileNameTagsTokens, GenericAndFileTagTokens,
 					UDPipeConLL, TreeBanks};
 	private static boolean loadDataSets(DataSetType dtype, String filename, 

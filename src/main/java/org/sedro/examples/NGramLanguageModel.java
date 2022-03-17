@@ -42,7 +42,6 @@ import vegml.VegTrain;
 import vegml.Data.VDataSet;
 import vegml.Data.VDataSets;
 import vegml.Data.VFileUtil;
-import vegml.Data.VFileUtil.DataSetType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -71,23 +70,7 @@ import vegml.VFrame;
  *   sticking to a standard N-Gram language model
  */
 public class NGramLanguageModel {
-	//static private DataSetType dataSetToUse = DataSetType.BrownPennTreebankTags; 	// moved 'almost' to penn treebank (49)
-	//static private DataSetType dataSetToUse = DataSetType.BrownUniversalTags; 	// universal tagset
-	//static private DataSetType dataSetToUse = DataSetType.BrownCleanTags; 		// just primary tags per token (91)
-	//static private DataSetType dataSetToUse = DataSetType.BrownOldTags; 			// base form (4xx)
-	static private DataSetType dataSetToUse = DataSetType.WSJTreebank3;			// load WSJ Full
-	//static private DataSetType dataSetToUse = DataSetType.WSJTreebank;			// load WSJ if you got it (I don't $$$)
-	//static private DataSetType dataSetToUse = DataSetType.UDPipeConLL;					// load CONLL17 UDPipe.conllu
-
-	// expects a neg and pos directory under it
-	// THERE MUST BE NO OTHER FILES IN THIS DIRECTORY 
-	// - when you download the content there are a few indexes/etc.. delete them or results will be significantly flawed
-	static final String file_base_directory = "../corpus/brownPos";
-	static final String wsj_file_base_directory = "../corpus/treebank/tagged";
-	static final String wsj_full_file_base_directory = "../corpus/treebank_3/treebank_3/tagged/pos/wsj";
-	static final String corpus_base_directory = "../corpus";	
-
-	
+	static String directory = "../models";	
 
 
 	////////////////////////////////////////////////////
@@ -95,31 +78,31 @@ public class NGramLanguageModel {
 	public static void main(String [] args) {
 		VegML.showCopywrite();
 		int window = 9; // max n-gram to retain
+		double percentTune = 15, percentTest = 15;
 		String fileName = "ngram-"+window+".veg";
+		String corpusDir = "../corpus";
+		String dataset = "WSJ"; // brown/brown-penntreebank
+		
+		VegML.showCopywrite();
 
-		////////////////////////////////////////////////////
-		// load dataSet
-		VDataSets ds = null;	
-		if (dataSetToUse == DataSetType.UDPipeConLL) {
-			String type = "gold"; // gold/test
-			String languageTag = "zh";
-			String setDir = "UD_Chinese";
-			//String setDir = "UD_English";
-			//String setDir = "UD_English-LinES";
-			//String setDir = "UD_English-ParTUT";
-			//String setDir = "UD_Vietnamese";
-			//String setDir = null; // "UD_English-LinES"
-			//String languageTag = null;
-			//String ps = "UPOS"; // "XPOS";
-			String ps = "XPOS"; // "XPOS";
-
-			ds = VFileUtil.loadDataSetsDSConLL(type, corpus_base_directory, languageTag, setDir, ps);
-		} else {
-			String filename = file_base_directory;
-			if (dataSetToUse == DataSetType.WSJTreebank) filename = wsj_file_base_directory;
-			else if (dataSetToUse == DataSetType.WSJTreebank3) filename = wsj_full_file_base_directory;
-			ds = VFileUtil.loadDataSetsDS(dataSetToUse, filename, 0, 0);
-		}		
+		/////////////////////////////////////////////////////////////////////
+		// parse the arguments if from command line
+		if (args != null && args.length > 0) {    		
+			for (String a:args) {
+				String [] ap = a.split("=");	
+				if (a.startsWith("directory=")) {
+					directory = ap[1];
+				} else if (a.startsWith("dataset=")) {
+					// this is messy: WSJ:../corpus
+					String sq [] = ap[1].split(":");
+					if (sq.length == 2) corpusDir = sq[1];
+					dataset = sq[0];
+				}
+			}
+		} 		
+		VDataSets ds = VFileUtil.loadDataSet(dataset, corpusDir, percentTune, percentTest);
+		System.out.println("DATASET["+dataset+"] LOADED train["+ds.getTrainCount()+"] tune["+ds.getTuneCount()+"] test[" + ds.getTestCount()+"] dataWidth["+ ds.getDefinition().getTagCount()+"]");	
+			
 		
 		// this data set is currently text to POS, must change it to text and make it lowercase, tag ends
 		ds.toLowercase();
