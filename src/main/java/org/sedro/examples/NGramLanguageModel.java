@@ -101,7 +101,11 @@ public class NGramLanguageModel {
 			}
 		} 		
 		VDataSets ds = VFileUtil.loadDataSet(dataset, corpusDir, percentTune, percentTest);
-		System.out.println("DATASET["+dataset+"] LOADED train["+ds.getTrainCount()+"] tune["+ds.getTuneCount()+"] test[" + ds.getTestCount()+"] dataWidth["+ ds.getDefinition().getTagCount()+"]");	
+		if (ds == null) {
+			System.out.println("ERROR DATASET["+dataset+"] not found at: " + corpusDir);
+			return;
+		}
+		System.out.println("DATASET["+dataset+"] train["+ds.getTrainCount()+"] tune["+ds.getTuneCount()+"] test[" + ds.getTestCount()+"] dataWidth["+ ds.getDefinition().getTagCount()+"]");	
 			
 		
 		// this data set is currently text to POS, must change it to text and make it lowercase, tag ends

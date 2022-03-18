@@ -65,20 +65,18 @@ public class VegTestModels {
 		
 		/////////////////////////////////////////////////////////////////////
 		// Configuration
-		String directory = null, pre = "vtext", dtag = "text", dptag = "pos";
+		String directory = "../models", pre = "vtext", dtag = "text", dptag = "pos";
 		int windowMax = 7;
 		int window = windowMax = 1;
 		boolean amp = true;
 		int optMax = 50;
-		double percentTest = 15, percentTune = 0;		
+		double percentTest = 15, percentTune = 15;		
 		boolean showNumberSets = false;
 		boolean fullData = false;
 		boolean endOnMiss = true;
 		String corpusDir = "../corpus";
 		String dataset = "WSJ"; // brown/brown-penntreebank
-				
-		directory = "../models";
-		//directory = ".";
+		String file = null;
 		
 		/////////////////////////////////////////////////////////////////////
 		// parse the arguments if from command line
@@ -101,7 +99,9 @@ public class VegTestModels {
 				} else if (a.startsWith("dtag=")) {
 					dtag = ap[1];
 				} else if (a.startsWith("dptag=")) {
-					dptag = ap[1];		
+					dptag = ap[1];	
+				} else if (a.startsWith("file=")) {
+					file = ap[1];	
 				} else if (a.startsWith("fulldata=")) {
 					if (ap[1].equalsIgnoreCase("true")) fullData = true;
 				} else if (a.startsWith("dataset=")) {
@@ -117,7 +117,11 @@ public class VegTestModels {
 		/////////////////////////////////////////////////////////////////////
 		// load dataSet
 		VDataSets dss = VFileUtil.loadDataSet(dataset, corpusDir, percentTune, percentTest);
-		System.out.println("DATASET["+dataset+"] LOADED train["+dss.getTrainCount()+"] tune["+dss.getTuneCount()+"] test[" + dss.getTestCount()+"] dataWidth["+ dss.getDefinition().getTagCount()+"]");	
+		if (dss == null) {
+			System.out.println("ERROR DATASET["+dataset+"] not found at: " + corpusDir);
+			return;
+		}
+		System.out.println("DATASET["+dataset+"] train["+dss.getTrainCount()+"] tune["+dss.getTuneCount()+"] test[" + dss.getTestCount()+"] dataWidth["+ dss.getDefinition().getTagCount()+"]");	
 
 		VDataSets tuneDs = dss.getTuneDataSets();
 		VDataSets testDs = dss.getTestDataSets();
@@ -134,7 +138,7 @@ public class VegTestModels {
 		
 		// loading directory of models?
 		List<String> fnmodels = null;
-		if (directory != null) {
+		if (directory != null && file == null) {
 			fnmodels = VFileUtil.fileDirList(directory);
 			if (fnmodels != null) {
 				List<String> nl = new ArrayList<>();
@@ -156,9 +160,11 @@ public class VegTestModels {
 			int i = 1;
 			if (fnmodels != null) i = 0;
 			for (;i<optMax;i++) {
-				// load modle if present
+				// load model if present
+				if (file != null && i<1) return; // one and done
 				String fileName = pre+"-"+i+".veg";
-				if (fnmodels != null) fileName = fnmodels.get(i);
+				if (file != null) fileName = file;
+				else if (fnmodels != null) fileName = fnmodels.get(i);
 						
 				VegML vML = VegML.load(fileName);	
 				if (vML == null) {

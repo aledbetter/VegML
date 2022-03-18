@@ -550,9 +550,11 @@ public class VDataSets implements java.io.Serializable, Comparable<VDataSets> {
 		} else if (sum != 100) {
 			train += (100 - sum);
 		}
-		this.train = (int)((double)dsl.size() * (train/100));
-		this.tune = (int)((double)dsl.size() * (tune/100));
-		this.test = (int)((double)dsl.size() * (test/100));
+		if (dsl != null) {
+			this.train = (int)((double)dsl.size() * (train/100));
+			this.tune = (int)((double)dsl.size() * (tune/100));
+			this.test = (int)((double)dsl.size() * (test/100));
+		}
 		clearCache();
 	}
 	

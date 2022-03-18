@@ -10,7 +10,6 @@ The datasets used for these examples are available at the following locations:
  - [Rotten Tomatoes](https://www.cs.cornell.edu/people/pabo/movie-review-data/)
  - [Brown Corpus](https://www.kaggle.com/nltkdata/brown-corpus)
  - [ConLL 2017 Shared Task - multi-language corpus](https://lindat.mff.cuni.cz/repository/xmlui/handle/11234/1-1989)
- - [WSJ Partial Corpus; free](https://FIXME)
  - [WSJ Treebank3 Corpus; not free](https://catalog.ldc.upenn.edu/LDC2000T43)
  
 ## Running Examples

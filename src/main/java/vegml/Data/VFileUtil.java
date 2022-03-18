@@ -151,11 +151,17 @@ public class VFileUtil {
 		// load dataSet
 		if (dataSetToUse == DataSetType.UDPipeConLL) {
 			// should load test and gold, split for tune/test
-			// FIXME
-			//dataSet = conll17/zh/UD_Chinese
+			//dataSet = conll17/UD_Chinese
 			String dx [] = dataSet.split("/");
-			String languageTag = dx[1];
-			String setDir = dx[2];
+			// find langtag for string		
+			String languageTag = "en";
+			String setDir = dx[1];
+			for (int i=0;i<conLLSet.length;i++) {
+				if (conLLSet[i][0].equalsIgnoreCase(setDir)) {
+					languageTag = conLLSet[i][1];
+					break;
+				}
+			}
 			String ps = "XPOS"; // "XPOS";
 			String type = "test"; // gold/test
 			if (dataSet.toLowerCase().startsWith("conll17-gold")) type = "gold";
@@ -172,9 +178,10 @@ public class VFileUtil {
 		} else {
 			String filename = bdir+file_base_directory;
 			if (dataSetToUse == DataSetType.WSJTreebank3) filename = bdir+wsj_full_file_base_directory;
+			
 			dss = VFileUtil.loadDataSetsDS(dataSetToUse, filename, percentTune, percentTest);
 		}		
-		dss.genVSets();
+		if (dss != null) dss.genVSets();
 		return dss;
 	}
 	
@@ -1227,10 +1234,12 @@ public class VFileUtil {
 		List<List<ThingTag>> dsTl = new ArrayList<>();
 		List<List<ThingTag>> dsTuneTl = new ArrayList<>();
 		List<List<ThingTag>> dsTestTl = new ArrayList<>();
-		VFileUtil.loadDataSets(dtype, filename, dsList, dsValList, dsValList2, 
+		if (!VFileUtil.loadDataSets(dtype, filename, dsList, dsValList, dsValList2, 
 				dsTuneList, dsTuneValList, dsTuneValList2, 
 				dsTestList, dsTestValList, dsTestValList2, 
-				ds2TestList, ds2TestValList, ds2TestValList2, vset, 0, 0, dsTl, dsTuneTl, dsTestTl);			
+				ds2TestList, ds2TestValList, ds2TestValList2, vset, 0, 0, dsTl, dsTuneTl, dsTestTl)) {
+			return null;
+		}
 
 		// add the tags
 		VDataSetDescriptor dsd = new VDataSetDescriptor();
@@ -1543,6 +1552,10 @@ public class VFileUtil {
 			for (int i = 0;i<=posTestEnd;i++) {
 				String dn = filename+"/"+String.format("%02d", i);
 				List<List<String>> set = VFileUtil.loadTreebankFiles(dn, includeBreaks);
+				if (set == null) {
+					System.out.println("ERROR no files found at["+filename+"]");
+					return false;
+				}
 				for (int x=0;x<set.size();x++) {
 					List<String> s = set.get(x);	
 					List<List<String>> spl = VFileUtil.tokenizeString(s, "/");
@@ -1609,7 +1622,10 @@ public class VFileUtil {
 			//	System.out.println("MultiTag["+pipCnt+"]"); // MultiTag[147]
 			//	for(String s:vset) System.out.println("TAG["+s+"]");
 			List<Object []> ool = loadTreebankMrgFiles(filename);
-			
+			if (ool == null) {
+				System.out.println("ERROR no files found at["+filename+"]");
+				return false;
+			}
 			int posTrainSize = (int)((double)ool.size() * (double)((double)percentTrain/(double)100));
 			int posTuneSize = (int)((double)ool.size() * (double)((double)percentTune/(double)100));
 			int posTestSize = (int)((double)ool.size() * (double)((double)percentTest/(double)100));
@@ -1654,6 +1670,10 @@ public class VFileUtil {
 
 		} else if (dtype != DataSetType.WSJTreebank) {
 			List<List<String>>  posAllAndNames =  VFileUtil.loadTextFilesAndName(filename);
+			if (posAllAndNames == null) {
+				System.out.println("ERROR no files found at["+filename+"]");
+				return false;
+			}
 			List<String> posAll =  posAllAndNames.get(0);
 			List<String> namsAll =  posAllAndNames.get(1);
 			int posTrainSize = (int)((double)posAll.size() * (double)((double)percentTrain/(double)100));
@@ -1709,21 +1729,35 @@ public class VFileUtil {
 				}
 				else np = VFileUtil.normalizePosString(spl.get(1), true, false, false);
 				
+				List<String []> valx = new ArrayList<String[]>(); // for secondary tags
+				for (int x=0;x<spl.get(0).size();x++) {
+					String [] sx = new String[1];
+					sx[0] = spl.get(0).get(x);
+					valx.add(sx);
+				}
+				
 				for (String sv:np) vset.add(sv);
 				if (dsList.size() < posTrainSize) {
 					dsValList.add(np);			
-					dsList.add(spl.get(0));	
+					dsList.add(spl.get(0));						
+					dsValList2.add(valx);			
 				} else if (dsTuneList.size() < posTuneSize) {
 					dsTuneValList.add(np);			
 					dsTuneList.add(spl.get(0));	
+					dsTuneValList2.add(valx);			
 				} else {
 					dsTestList.add(spl.get(0));
 					dsTestValList.add(np);
+					dsTestValList2.add(valx);			
 				}				
 			}
 		} else {
 			// Penntreebank .. sample from NTLK is all that has been available [199 files]
 			List<List<String>> posAll =  VFileUtil.loadTreebankFiles(filename, includeBreaks);	
+			if (posAll == null) {
+				System.out.println("ERROR no files found at["+filename+"]");
+				return false;
+			}
 			int posTrainSize = (int)((double)posAll.size() * (double)((double)percentTrain/(double)100));
 			int posTuneSize = (int)((double)posAll.size() * (double)((double)percentTune/(double)100));
 			int posTestSize = (int)((double)posAll.size() * (double)((double)percentTest/(double)100));

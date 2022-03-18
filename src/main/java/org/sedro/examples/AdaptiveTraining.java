@@ -89,7 +89,11 @@ public class AdaptiveTraining {
 			}
 		} 		
 		ds = VFileUtil.loadDataSet(dataset, corpusDir, percentTune, percentTest);
-		System.out.println("DATASET["+dataset+"] LOADED train["+ds.getTrainCount()+"] tune["+ds.getTuneCount()+"] test[" + ds.getTestCount()+"] dataWidth["+ ds.getDefinition().getTagCount()+"]");	
+		if (ds == null) {
+			System.out.println("ERROR DATASET["+dataset+"] not found at: " + corpusDir);
+			return;
+		}
+		System.out.println("DATASET["+dataset+"] train["+ds.getTrainCount()+"] tune["+ds.getTuneCount()+"] test[" + ds.getTestCount()+"] dataWidth["+ ds.getDefinition().getTagCount()+"]");	
 		
 		
 		//////////////////////////

@@ -96,7 +96,12 @@ public class TestPosViaTextFmt {
 			}
 		} 		
 		VDataSets dss = VFileUtil.loadDataSet(dataset, corpusDir, percentTune, percentTest);
-		System.out.println("DATASET["+dataset+"] LOADED train["+dss.getTrainCount()+"] tune["+dss.getTuneCount()+"] test[" + dss.getTestCount()+"] dataWidth["+ dss.getDefinition().getTagCount()+"]");	
+		if (dss == null) {
+			System.out.println("ERROR DATASET["+dataset+"] not found at: " + corpusDir);
+			return;
+		}
+		System.out.println("DATASET["+dataset+"] train["+dss.getTrainCount()+"] tune["+dss.getTuneCount()+"] test[" + dss.getTestCount()+"] dataWidth["+ dss.getDefinition().getTagCount()+"]");	
+
 		VDataSets trainDs = dss.getTrainDataSets();
 		VDataSets tuneDs = dss.getTuneDataSets();
 		VDataSets testDs = dss.getTestDataSets();
