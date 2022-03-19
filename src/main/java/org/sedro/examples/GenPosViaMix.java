@@ -91,25 +91,29 @@ public class GenPosViaMix {
 		}
 		System.out.println("DATASET["+dataset+"] train["+ds.getTrainCount()+"] tune["+ds.getTuneCount()+"] test[" + ds.getTestCount()+"] dataWidth["+ ds.getDefinition().getTagCount()+"]");	
 		
-		testMixPOS(reduceDefinition, false);
-		
-		testMixPOS(reduceDefinition, true);
+		pre = "vmix";
+		testMixPOS(reduceDefinition, NSWeightBase.None, false);
+
+		pre = "vmix-id";
+		testMixPOS(reduceDefinition, NSWeightBase.Distance,  false);
+				
+		pre = "vmix-id";
+		testMixPOS(reduceDefinition, NSWeightBase.Distance,  true);
 		
 		pType = PredictionType.AnyUnknown;
 		pre = "vmixun";
-		testMixPOS(reduceDefinition, true);		
+		VFileUtil.copyFile(directory+"/vmix-id-5.veg", directory+"/vmixun-5.veg");	 
+		testMixPOS(reduceDefinition, NSWeightBase.Distance, true);		
 	}
 	
 	
-	static void testMixPOS(boolean reduceDefinition, boolean optimize) {
+	static void testMixPOS(boolean reduceDefinition, NSWeightBase nsBase, boolean optimize) {
 		boolean showProgress = false;
 		int window = 5;
 		int focus = 2;
-		
-		NSWeightBase nsBase = NSWeightBase.Distance;	
-		
+				
 		if (optimize) {
-			String iName = directory+"/vmix-"+window+".veg";
+			String iName = directory+"/"+pre+"-"+window+".veg";
 			int dropSet = 1;
 			int phases = 1;
 			double dropPercent = 18; // 3
@@ -127,7 +131,7 @@ public class GenPosViaMix {
 			return;
 		} 
 		
-		VegML vML = new VegML("vmix-pos-"+window);
+		VegML vML = new VegML(pre+"-pos-"+window);
 		ds.genVSets();
 		trainModel(vML, window, focus, nsBase, reduceDefinition, ds.getTrainDataSets());
 
@@ -135,7 +139,7 @@ public class GenPosViaMix {
 		trainTestModel(vML, "mix", showProgress, false, ds);
 		vML.print();
 		
-		vML.save(directory+"/vmix-"+window+".veg");
+		vML.save(directory+"/"+pre+"-"+window+".veg");
 	}
 	
 

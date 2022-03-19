@@ -162,7 +162,7 @@ public class GenPosViaMerge {
 		vMLmun.moveDataPlane("mix", "pos", "mix_un", "pos");
 		vML.merge(vMLmun); // merge into one
 		
-		VegML vMLm = VegML.load(directory+"/vmix-5-w1-sp"+mixUnNum+".veg");		// mix
+		VegML vMLm = VegML.load(directory+"/vmix-id-5-w1-sp"+mixUnNum+".veg");		// mix
 		vML.merge(vMLm); // merge into one
 		vML.setCfgDefaultDataPlane("text", "pos");
 
