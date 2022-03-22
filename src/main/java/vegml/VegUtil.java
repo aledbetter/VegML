@@ -281,7 +281,7 @@ public class VegUtil {
 		}
 		Collections.sort(vpList, VpSort); // sort proper
 
-		if (makeWiner) {
+		if (makeWiner && false) {
 			if (lp == 0) lp = p*(double)0.95;  // drop 5% if only tied values
 			double split = ((p - lp) / cnt) * (double)0.50; // 90 percent of so we never reach next number
 			

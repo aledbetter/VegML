@@ -165,7 +165,7 @@ public class VFileUtil {
 			String ps = "XPOS"; // "XPOS";
 			String type = "test"; // gold/test
 			if (dataSet.toLowerCase().startsWith("conll17-gold")) type = "gold";
-			else if (dataSet.toLowerCase().startsWith("conll17-test")) type = "test";
+			else if (dataSet.toLowerCase().startsWith("conll17")) type = "test";
 
 			//String languageTag = "zh";
 			//setDir = "UD_Chinese";
@@ -1722,7 +1722,7 @@ public class VFileUtil {
 							String sx [] =  spl.get(1).get(x).split("/");
 							int cnt = Integer.parseInt(sx[1]);
 							spl.get(1).set(x, sx[0]);
-		// FIXME duplicate
+							// FIXME duplicate
 						}
 					} 
 					np = spl.get(1);
@@ -1730,9 +1730,9 @@ public class VFileUtil {
 				else np = VFileUtil.normalizePosString(spl.get(1), true, false, false);
 				
 				List<String []> valx = new ArrayList<String[]>(); // for secondary tags
-				for (int x=0;x<spl.get(0).size();x++) {
+				for (int x=0;x<spl.get(1).size();x++) {
 					String [] sx = new String[1];
-					sx[0] = spl.get(0).get(x);
+					sx[0] = spl.get(1).get(x);
 					valx.add(sx);
 				}
 				
